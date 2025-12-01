@@ -1,3 +1,17 @@
+Metadata-Version: 2.4
+Name: switchboard-ai
+Version: 0.1.0
+Summary: A lightweight library for multi-persona AI agent routing and state management.
+Author-email: Euklydia <contact@euklydia.com>
+Project-URL: Homepage, https://github.com/euklydia/switchboard-ai
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Requires-Dist: google-genai>=0.3.0
+Requires-Dist: pydantic>=2.0.0
+
 # AgentSwitch 🔀
 
 **AgentSwitch** is a lightweight Python library for building multi-persona AI agents. It solves the "State Management" problem in conversational AI by providing a robust mechanism to:
