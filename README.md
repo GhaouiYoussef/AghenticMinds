@@ -1,6 +1,6 @@
-# SwitchboardAI 🔀
+# ExpertFlow AI 🔀
 
-**SwitchboardAI** is a lightweight Python library for building multi-persona AI agents. It solves the "State Management" problem in conversational AI by providing a robust mechanism to:
+**ExpertFlow AI** is a lightweight Python library for building multi-persona AI agents. It solves the "State Management" problem in conversational AI by providing a robust mechanism to:
 
 1.  **Route** user intent to the correct "Expert" (Persona).
 2.  **Manage** conversation history, ensuring context is preserved during handoffs.
@@ -15,13 +15,13 @@
 ## Installation
 
 ```bash
-pip install switchboard-ai
+pip install expertflow-ai
 ```
 
 ## Quick Start
 
 ```python
-from switchboard_ai import Agent, Router, ConversationManager
+from expertflow import Agent, Router, ConversationManager
 
 # 1. Define your Agents
 orchestrator = Agent(
