@@ -1,7 +1,0 @@
-.env
-expertflow\__pycache__
-.venv_test
-test_package_usage.py
-tests\__pycache__
-.gitignore
-.vscode
