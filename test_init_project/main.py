@@ -1,5 +1,12 @@
 import os
-from expertflow import Agent, Router, ConversationManager, GeminiLLM
+import sys
+
+# Add parent directory to path to import expertflow from source
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from expertflow import Agent, Router, ConversationManager
+from expertflow.llm.gemini import GeminiLLM
+from expertflow.utils import Colors
 
 # 1. Load Prompts
 def load_prompt(path):
@@ -7,7 +14,12 @@ def load_prompt(path):
         return f.read()
 
 # Ensure you have your API key set
-# os.environ["GOOGLE_API_KEY"] = "your_api_key_here"
+
+# uncomment below lines if using dotenv
+# from dotenv import load_dotenv
+# load_dotenv()
+
+os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_API_KEY", "")
 
 def main():
     # Paths to prompts
@@ -39,14 +51,16 @@ def main():
 
     # 3. Setup Router
     # The router manages the agents and the default entry point
+    llm = GeminiLLM() # Or MockLLM() for testing
+    
     router = Router(
         agents=[task_planner, message_writer],
         default_agent=orchestrator,
-        llm=GeminiLLM() # Or MockLLM() for testing
+        llm=llm
     )
 
     # 4. Start Conversation
-    manager = ConversationManager(router=router)
+    manager = ConversationManager(router=router, llm=llm, debug=True)
     
     print("🤖 Garvis is ready! (Type 'quit' to exit)")
     print("-" * 50)
@@ -56,8 +70,11 @@ def main():
         if user_input.lower() in ["quit", "exit"]:
             break
             
-        response = manager.process_turn(user_input)
-        print(f"Garvis ({response.active_agent}): {response.content}")
+        response = manager.process_turn(user_id='01', message=user_input)
+        # if agent switched, indicate it
+        if response.switched_context:
+            print(f"{Colors.GREEN}--- Switched to {response.agent_name} ---{Colors.ENDC}")
+        print(f"Garvis {Colors.GREEN}({response.agent_name}){Colors.ENDC}: {response.content}")
         print("-" * 50)
 
 if __name__ == "__main__":

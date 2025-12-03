@@ -6,7 +6,7 @@ from .types import Agent, Message, TurnResponse
 from .router import Router
 from .memory import MemoryOptimizer
 from .llm.base import BaseLLM
-
+from .utils import Colors
 class ConversationManager:
     def __init__(self, router: Router, llm: BaseLLM, debug: bool = False):
         self.router = router
@@ -60,6 +60,8 @@ class ConversationManager:
         
         switched = next_agent_name != current_agent_name
         if switched:
+
+            print(f"{Colors.CYAN}--------Switched context from {current_agent_name} to {next_agent_name}------{Colors.ENDC}")
             # Prune history to remove old system prompts
             history = MemoryOptimizer.sanitize_for_switch(history)
             session["current_agent"] = next_agent_name
