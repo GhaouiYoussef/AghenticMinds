@@ -35,17 +35,11 @@ We care about two developer problems:
 
 Routing in multi-agent systems is a trade-off between **latency** and **routing accuracy / specialization**. AgenticMinds uses a pragmatic approach that balances both:
 
-- **Fast heuristic layer (v0.1)** — keyword/intent heuristics + simple fallback rules. Lowest latency; ideal for prototypes and low-variance user traffic.  
-- **LLM-assisted lightweight routing (v0.2/0.3)** — use a small LLM adapter or embedding lookup to disambiguate when the heuristic is uncertain. Higher accuracy at slightly higher latency.  
-- **Embedding-driven routing (v0.3)** — compute an embedding for the user request and route to the nearest expert profile (works well when you have many experts); trade-off: small embedding compute cost but more precise routing.  
-- **Hybrid mode (recommended)** — run the fast heuristic first; only for ambiguous cases call the lightweight LLM/embedding router. This gives you the best of both worlds: most requests are routed instantly; ambiguous ones get the extra compute.
+- **Context-Aware LLM Routing**: Instead of brittle keyword heuristics, we use a lightweight LLM call to classify intent based on the most recent conversation history. This ensures high accuracy even for complex queries.
+- **Orchestrator-Guided Flow**: The Orchestrator acts as an intelligent internal helper, maintaining context and guiding the user to the correct expert only when necessary, preventing jarring context switches.
+- **Optimized Context Window**: By routing based on a "sliding window" of recent history rather than the full conversation log, we keep latency low and token costs manageable without sacrificing the ability to understand immediate intent.
 
-Implementation suggestions:
-- Always cache routing decisions for short windows (context caching) to avoid repeating the same routing calls for repeated or similar queries.
-- Add a confidence threshold: only call the expensive router when `confidence < T`. T is tunable per deployment.
-- Track per-agent latency + success metrics (simple counters) so the system adaptively changes thresholds later.
-
-This staged, hybrid strategy lets you scale agent count while keeping the common case low-latency.
+This strategy lets you scale agent count while keeping the system responsive and accurate.
 
 ## How AgenticMinds differs from existing solutions
 
@@ -53,7 +47,7 @@ This staged, hybrid strategy lets you scale agent count while keeping the common
 
 - **Smaller surface area than “full agent frameworks”:** We trade off some advanced orchestration primitives early-on for better DX, smaller installs, and faster iteration cycles.
 
-- **Hybrid routing-first approach:** Many libraries rely primarily on large LLM routing or heavy embedding costs. AgenticMinds ships a hybrid route-first design (heuristic → LLM/embedding fallback) to minimize latency while keeping routing accurate.
+- **Context-Aware Routing:** Many libraries rely on rigid keywords or heavy embedding databases. AgenticMinds uses a lightweight LLM classifier on the recent conversation window, ensuring accurate routing without the operational complexity.
 
 - **Designed for incremental adoption:** Start with simple keyword or persona-based flows; progressively enable embedding routing, tools, and storage as the product matures — you don’t need to rewrite the app to scale.
 
@@ -117,7 +111,7 @@ print(f"Response: {response.content}")
 
 ## Real-World Usage
 
-To use with a real LLM (e.g., Gemini), simply switch the adapter:
+To use with a real LLM (e.g., Gemini), simply switch the adapter (check `simple_example.py`):
 
 ```python
 import os

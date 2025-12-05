@@ -134,7 +134,7 @@ class Flow:
              print(f"│                                                                        │")
              print(f"│  python advanced_example.py                                            │")
              print("│  OR                                                                    │")
-             print(f"│  python example.py                                                     │")
+             print(f"│  python simple_example.py                                              │")
              print(f"└────────────────────────────────────────────────────────────────────────┘{Colors.ENDC}")
              self._mock_notice_shown = True
 
