@@ -1,6 +1,7 @@
 from typing import List, Any, Dict, Optional
 from ..types import Message
 from .base import BaseLLM
+from ..utils import Colors
 import os
 try:
     from google import genai
@@ -16,7 +17,7 @@ class GeminiLLM(BaseLLM):
         #  lets check if its already an env var 
         resolved_api_key = api_key or os.getenv("GOOGLE_API_KEY")
         if not resolved_api_key:
-            raise ValueError("API key is required. Provide it directly or set GOOGLE_API_KEY in the environment.")
+            raise ValueError("API key is required. Provide it directly or set GOOGLE_API_KEY in the environment. \nIf you don't have one, create one for free at https://aistudio.google.com/api-keys/")
         self.client = genai.Client(api_key=resolved_api_key)
         self.model_name = model_name
         self._last_usage = {"total": 0}
@@ -86,8 +87,7 @@ class GeminiLLM(BaseLLM):
             return getattr(response, "text", "") or ""
 
         except Exception as e:
-            print(f"Gemini Error: {e}")
-            return f"Error: {str(e)}"
+            raise e
 
     def get_token_usage(self) -> Dict[str, int]:
         return self._last_usage

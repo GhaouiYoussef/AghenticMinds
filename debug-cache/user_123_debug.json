@@ -1,20 +1,5 @@
 {
-  "last_updated": "2025-12-05T21:03:26.534023",
-  "current_expert": "support",
-  "history": [
-    {
-      "role": "user",
-      "content": "hey",
-      "metadata": {
-        "expert": "orchestrator"
-      }
-    },
-    {
-      "role": "assistant",
-      "content": "Hi there! How can I help you today?\n",
-      "metadata": {
-        "expert": "orchestrator"
-      }
-    }
-  ]
+  "last_updated": "2025-12-05T21:50:11.379749",
+  "current_expert": "orchestrator",
+  "history": []
 }

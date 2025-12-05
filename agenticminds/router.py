@@ -1,6 +1,7 @@
 from typing import List, Optional
 from .types import Expert, Message
 from .llm.base import BaseLLM
+from .utils import Colors
 
 class Router:
     def __init__(self, experts: List[Expert], llm: BaseLLM, default_expert: Optional[Expert] = None):
@@ -72,7 +73,9 @@ class Router:
             return current_expert_name
             
         except Exception as e:
-            print(f"Router Error: {e}")
+            # The LLM class handles printing the specific error (e.g. API key issues)
+            # We just log a small warning here to indicate routing failed.
+            print(f"{Colors.YELLOW}Router warning: Failed to classify intent. Staying with {current_expert_name}.{Colors.ENDC}")
             return current_expert_name
 
     def get_expert(self, name: str) -> Expert:

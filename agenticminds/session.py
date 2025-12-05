@@ -6,6 +6,7 @@ from .types import Expert, Message, TurnResponse
 from .router import Router
 from .memory import PNNet
 from .llm.base import BaseLLM
+from .llm.mock import MockLLM
 from .utils import Colors
 
 class Flow:
@@ -14,6 +15,7 @@ class Flow:
         self.llm = llm
         self.debug = debug
         self.optimize = optimize
+        self._mock_notice_shown = False
             
         # In-memory storage for demo purposes. 
         # In production, this should be replaced by a persistent store (Redis/Mongo).
@@ -107,7 +109,10 @@ class Flow:
             token_usage = self.llm.get_token_usage()
 
         except Exception as e:
-            response_text = f"I encountered an error: {str(e)}"
+            print(f"{Colors.RED}Error generating response: {e}{Colors.ENDC}")
+            if "API_KEY_INVALID" in str(e) or "API key not valid" in str(e):
+                print(f"{Colors.YELLOW}API key is required. Provide it directly or set GOOGLE_API_KEY in the environment. \nIf you don't have one, create one for free at https://aistudio.google.com/api-keys/{Colors.ENDC}")
+            response_text = "I encountered a system error. Please check the console logs."
 
         # 4. Update History
         # We append the user message and the assistant response to our internal history
@@ -120,6 +125,18 @@ class Flow:
         # Summarize if optimize is enabled
         if self.optimize:
              session["history"] = PNNet.summarize_if_needed(session["history"], self.llm)
+
+        # Check for MockLLM notice (Show only once)
+        if isinstance(self.llm, MockLLM) and not self._mock_notice_shown:
+             print(f"\n{Colors.GREEN}┌────────────────────────────────────────────────────────────────────────┐")
+             print(f"│  🚀 NOTE: This was a simulation using MockLLM (no API key required).   │")
+             print(f"│  To see the real AI workflow with Gemini, try running:                 │")
+             print(f"│                                                                        │")
+             print(f"│  python advanced_example.py                                            │")
+             print("│  OR                                                                    │")
+             print(f"│  python example.py                                                     │")
+             print(f"└────────────────────────────────────────────────────────────────────────┘{Colors.ENDC}")
+             self._mock_notice_shown = True
 
         return TurnResponse(
             content=response_text,
