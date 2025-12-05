@@ -10,7 +10,7 @@ except ImportError:
     types = None
 
 class GeminiLLM(BaseLLM):
-    def __init__(self, api_key: Optional[str] = None, model_name: str = "gemini-2.0-flash"):
+    def __init__(self, api_key: Optional[str] = None, model_name: str = "gemini-2.0-flash-lite"):
         if not genai:
             raise ImportError("google-genai package is required for GeminiLLM")
         #  lets check if its already an env var 
@@ -91,3 +91,14 @@ class GeminiLLM(BaseLLM):
 
     def get_token_usage(self) -> Dict[str, int]:
         return self._last_usage
+
+    def count_tokens(self, text: str) -> int:
+        try:
+            resp = self.client.models.count_tokens(
+                model=self.model_name,
+                contents=types.Content(parts=[types.Part(text=text)])
+            )
+            return resp.total_tokens
+        except Exception as e:
+            print(f"Token Count Error: {e}")
+            return len(text) // 4 # Fallback

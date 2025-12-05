@@ -105,7 +105,7 @@ def main():
 if __name__ == "__main__":
     main()
 """
-
+ENV_SETUP_INSTRUCTIONS = """GOOGLE_API_KEY=your_api_key_here"""
 # --- CLI Logic ---
 
 def init_project(project_name="."):
@@ -126,6 +126,7 @@ def init_project(project_name="."):
         os.path.join(base_path, "prompts", "experts", "custom_template.md"): CUSTOM_EXPERT_TEMPLATE,
         os.path.join(base_path, "prompts", "orchestrator", "custom_orch_template.md"): CUSTOM_ORCHESTRATOR_TEMPLATE,
         os.path.join(base_path, "main.py"): MAIN_PY_TEMPLATE,
+        os.path.join(base_path, ".env"): ENV_SETUP_INSTRUCTIONS,
     }
 
     print(f"🚀 Initializing ExpertFlow project in '{base_path}'...")
@@ -147,7 +148,7 @@ def init_project(project_name="."):
     print("\n✅ Project initialized successfully!")
     print("\nNext steps:")
     print("1. Set your GOOGLE_API_KEY environment variable.")
-    print("If you don't have one, create one for free at https://aistudio.google.com/api-keys")
+    print("If you don't have one, create one for free at https://aistudio.google.com/api-keys \n")
     print("2. Run the application: python main.py")
 
 def main():

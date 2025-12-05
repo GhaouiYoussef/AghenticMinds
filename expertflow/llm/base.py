@@ -29,3 +29,10 @@ class BaseLLM(ABC):
         Returns the token usage of the last call.
         """
         pass
+
+    @abstractmethod
+    def count_tokens(self, text: str) -> int:
+        """
+        Counts the number of tokens in the given text.
+        """
+        pass

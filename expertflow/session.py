@@ -8,10 +8,11 @@ from .memory import MemoryOptimizer
 from .llm.base import BaseLLM
 from .utils import Colors
 class ConversationManager:
-    def __init__(self, router: Router, llm: BaseLLM, debug: bool = False):
+    def __init__(self, router: Router, llm: BaseLLM, debug: bool = False, optimize: bool = False):
         self.router = router
         self.llm = llm
         self.debug = debug
+        self.optimize = optimize
             
         # In-memory storage for demo purposes. 
         # In production, this should be replaced by a persistent store (Redis/Mongo).
@@ -107,6 +108,10 @@ class ConversationManager:
         
         # Prune if too long
         session["history"] = MemoryOptimizer.prune(history)
+
+        # Summarize if optimize is enabled
+        if self.optimize:
+             session["history"] = MemoryOptimizer.summarize_if_needed(session["history"], self.llm)
 
         return TurnResponse(
             content=response_text,
