@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import Optional, List, Any, Dict
 
-class Agent(BaseModel):
+class Expert(BaseModel):
     """
     Defines a specific persona or expert within the system.
     """

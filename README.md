@@ -1,93 +1,98 @@
-# ExpertFlow AI 🔀
+# AgenticMinds
 
-**ExpertFlow AI** is a lightweight Python library for building multi-persona AI agents. It solves the "State Management" problem in conversational AI by providing a robust mechanism to:
+A lightweight library for multi-persona AI agent routing and state management.
 
-1.  **Route** user intent to the correct "Expert" (Persona).
-2.  **Manage** conversation history, ensuring context is preserved during handoffs.
-3.  **Optimize** context windows by pruning stale system prompts and hints.
+## Features (v0.1)
 
-## Features
-
-*   **Dynamic Router:** Hot-swap system prompts based on user intent classification.
-*   **Context Pruning:** Automatically sanitizes chat history to save tokens and reduce hallucinations.
-*   **Framework Agnostic:** Designed to work with any LLM provider (Google Gemini, OpenAI, Anthropic), though currently optimized for Google GenAI.
-
-## Memory Optimization Strategy
-
-To handle long-running conversations efficiently, ExpertFlow implements a **Dynamic History Compression** strategy. This ensures that the context window remains manageable without losing critical information.
-
-### Mathematical Model
-
-Let $H_t$ be the conversation history at turn $t$, and $|H_t|$ be its token count.
-Let $\theta$ be the maximum token threshold (e.g., 100,000 tokens).
-Let $H_{recent}$ be the set of $k$ most recent messages that must remain verbatim.
-Let $H_{old} = H_t \setminus H_{recent}$ be the compressible history.
-
-When $|H_t| > \theta$, the optimization function $f(H_t)$ is triggered:
-
-$$
-f(H_t) = S(H_{old}, r) \cup H_{recent}
-$$
-
-Where:
-*   $S(text, r)$ is a summarization function that compresses text by a ratio $r$ (e.g., $r=4$ implies 10,000 tokens $\to$ 2,500 tokens).
-*   The new token count becomes $|f(H_t)| \approx \frac{|H_{old}|}{r} + |H_{recent}|$.
-
-This approach allows the system to maintain an "infinite" conversation loop where the oldest details are progressively compressed while the immediate context remains high-resolution.
+*   **Flow**: Simple conversation management.
+*   **Expert**: Define agents with specific personas and tools.
+*   **Router**: Basic intent routing between experts.
+*   **PNNet**: Tiny interface for memory optimization and context management.
+*   **LLM Adapter**: Support for Gemini (and easy to extend).
 
 ## Installation
 
 ```bash
-pip install expertflow-ai
+pip install agenticminds
 ```
 
-## CLI Usage
-
-ExpertFlow comes with a CLI to quickly scaffold new projects with best-practice templates.
-
-```bash
-# Initialize a new project
-expertflow init my_agent_project
-
-# Navigate to the project
-cd my_agent_project
-
-# Run the agent
-python main.py
-```
-
-This generates a folder structure with:
-*   `main.py`: The entry point for your agent.
-*   `prompts/`: Directory containing system prompts for the Orchestrator and Experts.
-
-## Quick Start
+## Usage Example
 
 ```python
-from expertflow import Agent, Router, ConversationManager, GeminiLLM
+import os
+from agenticminds import Expert, Router, Flow
+from agenticminds.llm import GeminiLLM
 
-# 1. Define your Agents
-orchestrator = Agent(
-    name="orchestrator",
-    system_prompt="You are a helpful assistant. Route complex queries to experts.",
-    description="General queries, greetings, and routing."
+# 1. Setup LLM
+# Ensure GOOGLE_API_KEY is set in your environment
+llm = GeminiLLM(model_name="gemini-2.0-flash", api_key=os.getenv("GOOGLE_API_KEY"))
+
+# 2. Define Experts
+support_expert = Expert(
+    name="support",
+    description="Handles technical support queries.",
+    system_prompt="You are a technical support specialist. Help users with their issues."
 )
 
-marketing_expert = Agent(
-    name="marketing",
-    system_prompt="You are a marketing guru. Focus on growth and SEO.",
-    description="Questions about marketing, SEO, and growth."
+sales_expert = Expert(
+    name="sales",
+    description="Handles sales inquiries and pricing.",
+    system_prompt="You are a sales representative. Answer questions about pricing and features."
 )
 
-# 2. Initialize Router
-router = Router(agents=[orchestrator, marketing_expert], default_agent=orchestrator)
+# 3. Setup Router
+router = Router(
+    experts=[support_expert, sales_expert],
+    llm=llm
+)
 
-# 3. Manage Conversation
-# Set debug=True to see detailed routing logs and state changes
-manager = ConversationManager(router=router, llm=GeminiLLM(), debug=True)
+# 4. Create Flow
+flow = Flow(router=router, llm=llm)
 
-user_input = "How do I improve my SEO?"
-response = manager.process_turn(message=user_input)
-
+# 5. Run Conversation
+response = flow.process_turn("I have a problem with my account.")
 print(f"Agent: {response.agent_name}")
-print(f"Reply: {response.content}")
+print(f"Response: {response.content}")
+
+response = flow.process_turn("How much does the premium plan cost?")
+print(f"Agent: {response.agent_name}")
+print(f"Response: {response.content}")
 ```
+
+## Advanced Quick Start
+
+For a more complex scenario involving an **Orchestrator** that switches "modes" (personas) instead of transferring to different agents, check out the `advanced_example.py`.
+
+This example demonstrates:
+1.  **Orchestrator Persona**: A central guide ("Orion") who listens to the user.
+2.  **Mode Switching**: The Orchestrator switches to "Sales Mode" or "Support Mode" based on intent.
+3.  **Interactive Chat**: A loop to chat with the agent in real-time.
+
+### Running the Advanced Example
+
+1.  Ensure your `GOOGLE_API_KEY` is set in your `.env` file or environment variables.
+2.  Run the script:
+
+```bash
+python advanced_example.py
+```
+
+3.  **Try it out**:
+    *   Say "My app is crashing" -> Switches to **Support**.
+    *   Say "I want to buy a license" -> Switches to **Sales**.
+
+### Using Quick Start Prompts
+
+You can access the pre-defined prompts used in the advanced example directly from the package:
+
+```python
+from agenticminds.prompts import QUICK_START_ORCHESTRATOR, QUICK_START_SALES, QUICK_START_SUPPORT
+
+# Use them in your Expert definitions
+orchestrator = Expert(
+    name="orchestrator",
+    description="Central Guide",
+    system_prompt=QUICK_START_ORCHESTRATOR
+)
+```
+

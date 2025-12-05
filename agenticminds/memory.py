@@ -1,9 +1,10 @@
 from typing import List, Any
 from .types import Message
 
-class MemoryOptimizer:
+class PNNet:
     """
     Handles the pruning and sanitization of conversation history.
+    (Tiny PNNet interface)
     """
     
     @staticmethod
@@ -19,8 +20,8 @@ class MemoryOptimizer:
     @staticmethod
     def sanitize_for_switch(history: List[Message]) -> List[Message]:
         """
-        Cleans up history when switching agents.
-        Removes old system prompts or agent-specific hints to prevent confusion.
+        Cleans up history when switching experts.
+        Removes old system prompts or expert-specific hints to prevent confusion.
         """
         clean_history = []
         for msg in history:

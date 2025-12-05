@@ -3,8 +3,8 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "expertflow-ai"
-version = "0.1.01"
+name = "agenticminds"
+version = "0.1.0"
 description = "A lightweight library for multi-persona AI agent routing and state management."
 authors = [
   { name="GhaouiYoussef", email="youssefghaoui.pro@gmail.com" },
@@ -22,15 +22,12 @@ dependencies = [
     "python-dotenv>=1.2.1"
 ]
 
-[project.scripts]
-expertflow = "expertflow.cli:main"
-
 [project.urls]
 "Homepage" = "https://github.com/GhaouiYoussef/expertflow-ai"
 
 [tool.setuptools.packages.find]
-include = ["expertflow*"]
+include = ["agenticminds*"]
 exclude = ["test_init_project*", "tests*"]
 
 [tool.setuptools.package-data]
-"expertflow" = ["prompts/**/*"]
+"agenticminds" = ["prompts/**/*"]
