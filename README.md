@@ -12,6 +12,29 @@
 *   **Context Pruning:** Automatically sanitizes chat history to save tokens and reduce hallucinations.
 *   **Framework Agnostic:** Designed to work with any LLM provider (Google Gemini, OpenAI, Anthropic), though currently optimized for Google GenAI.
 
+## Memory Optimization Strategy
+
+To handle long-running conversations efficiently, ExpertFlow implements a **Dynamic History Compression** strategy. This ensures that the context window remains manageable without losing critical information.
+
+### Mathematical Model
+
+Let $H_t$ be the conversation history at turn $t$, and $|H_t|$ be its token count.
+Let $\theta$ be the maximum token threshold (e.g., 100,000 tokens).
+Let $H_{recent}$ be the set of $k$ most recent messages that must remain verbatim.
+Let $H_{old} = H_t \setminus H_{recent}$ be the compressible history.
+
+When $|H_t| > \theta$, the optimization function $f(H_t)$ is triggered:
+
+$$
+f(H_t) = S(H_{old}, r) \cup H_{recent}
+$$
+
+Where:
+*   $S(text, r)$ is a summarization function that compresses text by a ratio $r$ (e.g., $r=4$ implies 10,000 tokens $\to$ 2,500 tokens).
+*   The new token count becomes $|f(H_t)| \approx \frac{|H_{old}|}{r} + |H_{recent}|$.
+
+This approach allows the system to maintain an "infinite" conversation loop where the oldest details are progressively compressed while the immediate context remains high-resolution.
+
 ## Installation
 
 ```bash
