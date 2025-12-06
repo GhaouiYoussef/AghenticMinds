@@ -17,9 +17,9 @@ Building multi-agent systems often involves complex frameworks that are hard to 
 ## Features (v0.1)
 
 *   **Flow**: Simple conversation management.
-*   **Expert**: Define agents with specific personas and tools.
+*   **Expert**: Define agents with specific personas.
 *   **Router**: Basic intent routing between experts.
-*   **PNNet**: Tiny interface for memory optimization and context management.
+*   **PNNet**: Tiny interface for memory optimization and context management & debugging.
 *   **LLM Adapter**: Support for Gemini (and easy to extend).
 
 ## Story & Motivation
