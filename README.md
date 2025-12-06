@@ -77,7 +77,7 @@ graph TD
 ## Installation
 
 ```bash
-pip install aghentic_minds
+pip install aghentic-minds
 ```
 
 ## Quick Start (No API Key Required)
